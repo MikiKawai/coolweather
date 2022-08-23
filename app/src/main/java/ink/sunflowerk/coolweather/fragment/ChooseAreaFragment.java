@@ -2,13 +2,16 @@ package ink.sunflowerk.coolweather.fragment;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.fragment.app.Fragment;
+import ink.sunflowerk.coolweather.MainActivity;
 import ink.sunflowerk.coolweather.R;
+import ink.sunflowerk.coolweather.WeatherActivity;
 import ink.sunflowerk.coolweather.db.City;
 import ink.sunflowerk.coolweather.db.County;
 import ink.sunflowerk.coolweather.db.Province;
@@ -38,7 +41,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private AlertDialog progressDialog;
     private TextView titleText;
-    private Button backButton;
+    private ImageButton backButton;
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
@@ -86,6 +89,24 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTY) {
+
+                    String weatherId = countyList.get(position).getWeatherId();
+                    //如果是 LEVEL_COUNTY 就启动 WeatherActivity，并且把当前选中的天气id传递过去
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                        //关闭滑动菜单，显示下拉刷新进度条，请求城市的天气信息
+                    } else if (getActivity() instanceof WeatherActivity) {
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                        activity.weatherRefId = weatherId;
+                    }
+
                 }
             }
         });

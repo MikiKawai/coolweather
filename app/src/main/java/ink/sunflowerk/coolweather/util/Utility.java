@@ -1,9 +1,11 @@
 package ink.sunflowerk.coolweather.util;
 
 import android.text.TextUtils;
+import com.google.gson.Gson;
 import ink.sunflowerk.coolweather.db.City;
 import ink.sunflowerk.coolweather.db.County;
 import ink.sunflowerk.coolweather.db.Province;
+import ink.sunflowerk.coolweather.gson.Weather;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +52,7 @@ public class Utility {
         }
         return false;
     }
-    
+
     //县级
     public static boolean handleCountyResponse(String response, int cityId) {
         if (!TextUtils.isEmpty(response)) {
@@ -71,5 +73,25 @@ public class Utility {
         }
         return false;
     }
-    
+
+    /**
+     * 返回的 json数据解析成 weather实体类
+     *
+     * @param response
+     * @return
+     */
+    public static Weather handleWeatherResponse(String response) {
+        if (response != null){
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+                String weatherContent = jsonArray.getJSONObject(0).toString();
+                return new Gson().fromJson(weatherContent, Weather.class);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 }
