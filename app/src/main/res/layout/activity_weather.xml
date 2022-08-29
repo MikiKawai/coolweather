@@ -41,6 +41,7 @@
                 </LinearLayout>
             </ScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
         <fragment
                 android:id="@+id/choose_area_fragment"
                 android:name="ink.sunflowerk.coolweather.fragment.ChooseAreaFragment"
